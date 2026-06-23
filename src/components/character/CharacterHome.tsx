@@ -1,15 +1,23 @@
-"use client";
-
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import Image from "next/image";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 
 export default function CharacterHome() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const rotateX = useTransform(mouseY, [-150, 150], [5, -5]);
-  const rotateY = useTransform(mouseX, [-150, 150], [-5, 5]);
+  
+  // Smooth out mouse tracking with spring physics for an organic feel
+  const springConfig = { damping: 20, stiffness: 90, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+  
+  // 3D Rotation based on mouse
+  const rotateX = useTransform(smoothY, [-150, 150], [8, -8]);
+  const rotateY = useTransform(smoothX, [-150, 150], [-8, 8]);
+  
+  // Opposite direction parallax shift
+  const parallaxX = useTransform(smoothX, [-150, 150], [20, -20]);
+  const parallaxY = useTransform(smoothY, [-150, 150], [20, -20]);
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -17,7 +25,7 @@ export default function CharacterHome() {
     mouseX.set(e.clientX - (rect.left + rect.width / 2));
     mouseY.set(e.clientY - (rect.top + rect.height / 2));
   };
-
+  
   const handleMouseLeave = () => {
     mouseX.set(0);
     mouseY.set(0);
@@ -26,81 +34,59 @@ export default function CharacterHome() {
   return (
     <motion.div
       ref={containerRef}
-      className="relative w-full max-w-[420px] mx-auto cursor-pointer"
-      style={{ perspective: 800, rotateX, rotateY }}
+      className="relative w-full max-w-[420px] mx-auto cursor-pointer select-none"
+      style={{ perspective: 1200 }}
       onMouseMove={handleMouse}
       onMouseLeave={handleMouseLeave}
-      animate={{ scale: [1, 1.015, 1] }}
-      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ type: "spring", bounce: 0.4, duration: 1.2 }}
     >
-      <Image
-        src="/characters/home.png"
-        alt="Reeti sitting at her desk coding with her fox companion napping beside the laptop"
-        width={840}
-        height={840}
-        className="w-full h-auto drop-shadow-lg"
-        priority
+      {/* Dynamic Floor Shadow */}
+      <motion.div 
+        className="absolute bottom-0 left-[20%] right-[20%] h-4 bg-black/10 rounded-[100%] blur-md"
+        animate={{ scale: [1, 0.8, 1], opacity: [0.4, 0.2, 0.4] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
       />
+      
+      {/* Background Particles Specific to Section */}
 
-      {/* Coffee Steam — 3 animated wisps above the mug area */}
-      <div className="absolute bottom-[38%] left-[22%] w-8 h-12 pointer-events-none">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: 3 + i * 1.5,
-              height: 3 + i * 1.5,
-              left: `${30 + i * 15}%`,
-              bottom: 0,
-              background: "rgba(168, 184, 157, 0.5)",
-            }}
-            animate={{
-              y: [-0, -18 - i * 4],
-              x: [0, (i - 1) * 3],
-              opacity: [0, 0.6, 0],
-              scale: [0.5, 1.5],
-            }}
-            transition={{
-              duration: 2.5 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.7,
-              ease: "easeOut",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Blinking Cursor on laptop screen */}
-      <motion.div
-        className="absolute bottom-[44%] left-[48%] w-[3px] h-3 bg-sage-light rounded-sm pointer-events-none"
-        animate={{ opacity: [1, 1, 0, 0] }}
-        transition={{ duration: 1, repeat: Infinity, times: [0, 0.49, 0.5, 1] }}
-      />
-
-      {/* Ambient sparkle dots */}
-      {[
-        { top: "15%", right: "10%", delay: 0 },
-        { top: "30%", left: "8%", delay: 1.5 },
-        { bottom: "25%", right: "15%", delay: 3 },
-      ].map((pos, i) => (
+        {/* Floating Code Brackets */}
         <motion.div
-          key={i}
-          className="absolute w-1.5 h-1.5 rounded-full bg-terracotta-light pointer-events-none"
-          style={{ top: pos.top, bottom: pos.bottom, left: pos.left, right: pos.right }}
-          animate={{
-            opacity: [0, 0.7, 0],
-            scale: [0.5, 1.2, 0.5],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: pos.delay,
-            ease: "easeInOut",
-          }}
+          className="absolute top-[20%] left-[10%] text-[#7AB8A4] text-3xl font-mono font-bold opacity-40"
+          animate={{ y: [0, -20, 0], rotate: [0, 15, 0], opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >&lt;/&gt;</motion.div>
+        <motion.div
+          className="absolute top-[60%] right-[10%] text-[#E8A882] text-4xl font-mono font-bold opacity-30"
+          animate={{ y: [0, 30, 0], rotate: [0, -20, 0], opacity: [0.2, 0.5, 0.2] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >&#123;&#125;</motion.div>
+        <motion.div
+          className="absolute top-[15%] right-[20%] w-3 h-3 rounded-full bg-[#B19CD9] opacity-50 blur-sm"
+          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
         />
-      ))}
+
+      <motion.div style={{ rotateX, rotateY, x: parallaxX, y: parallaxY }} className="w-full h-full flex justify-center items-center relative z-10">
+        <motion.img
+          src="/images/characters/hero-character.home.png"
+          alt="Reeti 3D character home"
+          className="w-full h-auto"
+          animate={{ 
+            y: [0, -18, 0],
+            rotateZ: [-1.5, 1.5, -1.5],
+            filter: [
+              "drop-shadow(0px 10px 15px rgba(0,0,0,0.15))", 
+              "drop-shadow(0px 30px 25px rgba(0,0,0,0.25))", 
+              "drop-shadow(0px 10px 15px rgba(0,0,0,0.15))"
+            ]
+          }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+          whileHover={{ scale: 1.05, filter: "drop-shadow(0px 20px 20px rgba(0,0,0,0.3))" }}
+        />
+      </motion.div>
     </motion.div>
   );
 }
-
