@@ -1,65 +1,98 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import Image from "next/image";
+import { useRef } from "react";
+
+const stickyNotes = [
+  { color: "rgba(198, 123, 92, 0.25)", top: "18%", right: "20%", rotate: -8, delay: 0 },
+  { color: "rgba(122, 139, 111, 0.25)", top: "28%", right: "12%", rotate: 5, delay: 1.2 },
+  { color: "rgba(232, 168, 130, 0.2)", top: "22%", right: "30%", rotate: 12, delay: 2.4 },
+];
 
 export default function CharacterExperience() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-150, 150], [5, -5]);
+  const rotateY = useTransform(mouseX, [-150, 150], [-5, 5]);
+
+  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set(e.clientX - (rect.left + rect.width / 2));
+    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   return (
-    <div className="relative w-full max-w-[400px] aspect-square mx-auto">
-      <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-md">
-        {/* Whiteboard */}
-        <rect x="60" y="50" width="280" height="180" rx="4" fill="#f4f1ea" stroke="#d1d5db" strokeWidth="6" />
-        <rect x="60" y="230" width="280" height="10" fill="#9ca3af" />
-        
-        {/* Whiteboard Stand */}
-        <path d="M100 240 L80 350" stroke="#d1d5db" strokeWidth="6" strokeLinecap="round" />
-        <path d="M300 240 L320 350" stroke="#d1d5db" strokeWidth="6" strokeLinecap="round" />
+    <motion.div
+      ref={containerRef}
+      className="relative w-full max-w-[420px] mx-auto cursor-pointer"
+      style={{ perspective: 800, rotateX, rotateY }}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleMouseLeave}
+      animate={{ scale: [1, 1.015, 1] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+    >
+      <Image
+        src="/characters/experience.png"
+        alt="Reeti standing at a whiteboard with sticky notes, pointing and explaining, with her fox companion watching"
+        width={840}
+        height={840}
+        className="w-full h-auto drop-shadow-lg"
+      />
 
-        {/* Sticky Notes on whiteboard */}
-        <rect x="100" y="80" width="30" height="30" fill="#fcd5ce" transform="rotate(-5 115 95)" />
-        <rect x="150" y="90" width="30" height="30" fill="#e8a882" transform="rotate(8 165 105)" />
-        <rect x="120" y="140" width="30" height="30" fill="#a8b89d" transform="rotate(-2 135 155)" />
-        <rect x="200" y="120" width="30" height="30" fill="#fcd5ce" transform="rotate(12 215 135)" />
-        <rect x="250" y="85" width="30" height="30" fill="#a8b89d" transform="rotate(-10 265 100)" />
-
-        {/* Character (Girl pointing at whiteboard) */}
-        {/* Body */}
-        <path d="M190 350 c 0 -50 -20 -80 -40 -80 s -40 30 -40 80" fill="#7a8b6f" />
-        
-        {/* Head/Face */}
-        <circle cx="150" cy="220" r="30" fill="#fcd5ce" />
-        
-        {/* Curly Hair */}
-        <path d="M115 220 c -5 -25 10 -50 35 -55 c 25 -5 45 15 35 45 c 10 15 -5 40 -20 35 c -10 10 -30 10 -40 -5 c -10 -5 -15 -15 -10 -20 z" fill="#3d3528" />
-        
-        {/* Face details (profile view) */}
-        <circle cx="165" cy="220" r="2.5" fill="#3d3528" />
-        <path d="M170 225 q 4 2 8 -2" fill="none" stroke="#3d3528" strokeWidth="1.5" strokeLinecap="round" />
-
-        {/* Arm pointing up */}
-        <motion.path 
-          d="M160 280 q 30 -10 40 -40" 
-          fill="none" stroke="#fcd5ce" strokeWidth="10" strokeLinecap="round"
-          animate={{ d: ["M160 280 q 30 -10 40 -40", "M160 280 q 40 -20 60 -30", "M160 280 q 30 -10 40 -40"] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      {/* Floating sticky notes near whiteboard */}
+      {stickyNotes.map((note, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-5 h-5 rounded-sm pointer-events-none"
+          style={{
+            background: note.color,
+            top: note.top,
+            right: note.right,
+            border: `1px solid ${note.color}`,
+          }}
+          animate={{
+            y: [0, -6, 0],
+            rotate: [note.rotate, note.rotate + 4, note.rotate],
+            opacity: [0.6, 0.9, 0.6],
+          }}
+          transition={{
+            duration: 3.5,
+            repeat: Infinity,
+            delay: note.delay,
+            ease: "easeInOut",
+          }}
         />
+      ))}
 
-        {/* The Fox (Watching attentively) */}
-        <g transform="translate(260, 310)">
-          {/* Fox body sitting */}
-          <path d="M0 40 c 0 -20 15 -35 25 -35 c 10 0 20 15 20 35 z" fill="#d97736" />
-          {/* White chest */}
-          <path d="M15 15 c 0 10 10 25 15 25 c 5 -10 0 -25 -15 -25" fill="#f4f1ea" />
-          {/* Fox tail wrapped around */}
-          <path d="M45 35 c 15 0 20 5 0 5" fill="#d97736" />
-          {/* Fox head looking up */}
-          <circle cx="20" cy="10" r="12" fill="#d97736" />
-          <path d="M12 0 l -4 -10 l 10 8 z" fill="#d97736" />
-          <path d="M28 0 l 4 -10 l -10 8 z" fill="#d97736" />
-          {/* Eyes looking up */}
-          <circle cx="15" cy="8" r="1.5" fill="#3d3528" />
-          <circle cx="25" cy="8" r="1.5" fill="#3d3528" />
-        </g>
-      </svg>
-    </div>
+      {/* Pointer sparkle near the hand */}
+      <motion.div
+        className="absolute top-[35%] left-[55%] pointer-events-none"
+        animate={{
+          opacity: [0, 1, 0],
+          scale: [0.3, 1, 0.3],
+          rotate: [0, 180, 360],
+        }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 2l2.09 6.26L20 9.27l-4.91 3.78L16.18 20 12 16.77 7.82 20l1.09-6.95L4 9.27l5.91-1.01L12 2z"
+            fill="rgba(198, 123, 92, 0.6)"
+          />
+        </svg>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,62 +1,90 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import Image from "next/image";
+import { useRef } from "react";
 
 export default function CharacterProjects() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-150, 150], [5, -5]);
+  const rotateY = useTransform(mouseX, [-150, 150], [-5, 5]);
+
+  const handleMouse = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set(e.clientX - (rect.left + rect.width / 2));
+    mouseY.set(e.clientY - (rect.top + rect.height / 2));
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
   return (
-    <div className="relative w-full max-w-[400px] aspect-square mx-auto">
-      <svg viewBox="0 0 400 400" className="w-full h-full drop-shadow-md">
-        {/* Soft rug/floor area */}
-        <ellipse cx="200" cy="350" rx="150" ry="40" fill="#ece8dc" />
+    <motion.div
+      ref={containerRef}
+      className="relative w-full max-w-[420px] mx-auto cursor-pointer"
+      style={{ perspective: 800, rotateX, rotateY }}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleMouseLeave}
+      animate={{ scale: [1, 1.015, 1] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+    >
+      <Image
+        src="/characters/projects.png"
+        alt="Reeti sitting cross-legged sketching on a tablet with her fox companion curled up sleeping beside her"
+        width={840}
+        height={840}
+        className="w-full h-auto drop-shadow-lg"
+      />
 
-        {/* Character (Girl sitting on floor, sketching) */}
-        {/* Legs crossed */}
-        <path d="M120 340 q 40 30 80 0 q 40 -30 80 0 q 10 10 -20 20 q -60 20 -140 0 z" fill="#7a8b6f" />
-        
-        {/* Body */}
-        <path d="M160 340 c 0 -50 10 -90 40 -90 s 40 40 40 90 z" fill="#a8b89d" />
-        
-        {/* Head */}
-        <circle cx="200" cy="200" r="32" fill="#fcd5ce" />
-        
-        {/* Curly Hair */}
-        <path d="M165 200 c -5 -30 15 -55 40 -60 c 25 -5 45 15 35 45 c 10 15 -5 40 -20 35 c -10 10 -30 10 -40 -5 c -10 -5 -15 -15 -10 -15 z" fill="#3d3528" />
-        
-        {/* Face details (looking down) */}
-        <path d="M190 205 q 5 3 10 0" fill="none" stroke="#3d3528" strokeWidth="2" strokeLinecap="round" />
-        
-        {/* Tablet on lap */}
-        <rect x="155" y="270" width="90" height="60" rx="4" fill="#374151" transform="rotate(-15 200 300)" />
-        <rect x="165" y="280" width="70" height="40" rx="2" fill="#f4f1ea" transform="rotate(-15 200 300)" />
+      {/* Zzz sleep bubbles floating up from the fox */}
+      {["z", "z", "z"].map((letter, i) => (
+        <motion.span
+          key={i}
+          className="absolute font-mono font-bold pointer-events-none select-none"
+          style={{
+            bottom: `${32 + i * 2}%`,
+            right: `${25 + i * 5}%`,
+            fontSize: `${10 + i * 3}px`,
+            color: "rgba(122, 139, 111, 0.5)",
+          }}
+          animate={{
+            y: [0, -20 - i * 8],
+            x: [0, 5 + i * 3],
+            opacity: [0, 0.7, 0],
+            rotate: [0, 10 + i * 5],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            delay: i * 0.8,
+            ease: "easeOut",
+          }}
+        >
+          {letter}
+        </motion.span>
+      ))}
 
-        {/* Arm sketching */}
-        <motion.path 
-          d="M230 250 q 20 20 -10 40" 
-          fill="none" stroke="#fcd5ce" strokeWidth="10" strokeLinecap="round"
-          animate={{ d: ["M230 250 q 20 20 -10 40", "M230 250 q 25 15 -5 35", "M230 250 q 15 25 -15 45", "M230 250 q 20 20 -10 40"] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* The Fox (Curled up on lap/beside) */}
-        <g transform="translate(130, 290)">
-          {/* Curled fox body */}
-          <circle cx="30" cy="30" r="25" fill="#d97736" />
-          <path d="M10 40 c -10 -10 -5 -25 10 -30 c 15 -5 25 5 15 15" fill="#d97736" />
-          <path d="M20 35 c 5 0 10 0 10 5" fill="#f4f1ea" /> {/* White tail tip */}
-          {/* Sleeping head */}
-          <circle cx="20" cy="15" r="10" fill="#d97736" />
-          <path d="M10 15 l 5 -8 l 8 5 z" fill="#d97736" />
-          <path d="M15 15 q 3 -2 5 0" fill="none" stroke="#3d3528" strokeWidth="1" strokeLinecap="round" />
-        </g>
-        
-        {/* Floating creative elements (stars/sparkles) */}
-        <motion.path d="M120 150 l 5 -10 l 5 10 l 10 5 l -10 5 l -5 10 l -5 -10 l -10 -5 z" fill="#e8a882" 
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0], rotate: [0, 90] }} transition={{ duration: 3, repeat: Infinity, delay: 0.5 }} />
-        <motion.path d="M280 180 l 3 -6 l 3 6 l 6 3 l -6 3 l -3 6 l -3 -6 l -6 -3 z" fill="#a8b89d" 
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0], rotate: [0, 90] }} transition={{ duration: 2.5, repeat: Infinity, delay: 1.5 }} />
-        <motion.path d="M250 120 l 4 -8 l 4 8 l 8 4 l -8 4 l -4 8 l -4 -8 l -8 -4 z" fill="#c67b5c" 
-          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0], rotate: [0, 90] }} transition={{ duration: 4, repeat: Infinity, delay: 0 }} />
-      </svg>
-    </div>
+      {/* Pencil sparkle glow near the tablet */}
+      <motion.div
+        className="absolute bottom-[42%] left-[40%] w-3 h-3 rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(232, 168, 130, 0.6) 0%, transparent 70%)",
+        }}
+        animate={{
+          opacity: [0.3, 0.8, 0.3],
+          scale: [0.8, 1.3, 0.8],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+    </motion.div>
   );
 }

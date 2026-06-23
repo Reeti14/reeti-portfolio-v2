@@ -12,8 +12,8 @@ export default function StatBadge({ label, value, suffix = "" }: { label: string
     if (isInView) {
       let start = 0;
       const end = value;
-      const duration = 2000; // 2s
-      const incrementTime = 30; // ms
+      const duration = 2000;
+      const incrementTime = 30;
       const steps = Math.ceil(duration / incrementTime);
       const stepValue = end / steps;
 
@@ -32,13 +32,17 @@ export default function StatBadge({ label, value, suffix = "" }: { label: string
   }, [isInView, value]);
 
   return (
-    <div ref={ref} className="flex flex-col items-center justify-center p-4 bg-cream border border-sage-light/20 rounded-lg shadow-sm">
-      <div className="text-3xl md:text-4xl font-bold text-sage-dark mb-1 font-mono">
+    <motion.div
+      ref={ref}
+      className="flex flex-col items-center justify-center p-5 glass rounded-xl shadow-sm glow-border group hover:shadow-md transition-all duration-300"
+      whileHover={{ y: -3, scale: 1.02 }}
+    >
+      <div className="text-3xl md:text-4xl font-bold text-sage-dark mb-1.5 font-mono group-hover:text-terracotta transition-colors duration-300">
         {count}{suffix}
       </div>
       <div className="text-xs md:text-sm font-medium text-warm-brown uppercase tracking-widest text-center">
         {label}
       </div>
-    </div>
+    </motion.div>
   );
 }

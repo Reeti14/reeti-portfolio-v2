@@ -3,7 +3,9 @@ import { DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PageTransition from "@/components/PageTransition";
+import ParticleBackground from "@/components/ParticleBackground";
+import ScrollProgress from "@/components/ScrollProgress";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -17,8 +19,8 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Reeti Singh | Evolved Cozy Workspace",
-  description: "Automating the boring stuff so humans can do the creative stuff.",
+  title: "Reeti Singh — Full-Stack Dev & Open-Source Advocate",
+  description: "Portfolio of Reeti Singh. Full-Stack Developer, Open-Source Contributor at Wikimedia Foundation, and Community Leader. Building elegant systems that automate the boring stuff.",
 };
 
 export default function RootLayout({
@@ -31,11 +33,12 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${dmMono.variable} antialiased`}
       >
+        <CustomCursor />
+        <ParticleBackground />
+        <ScrollProgress />
         <Navbar />
-        <main className="pt-20 pb-20 px-6 md:px-12 max-w-6xl mx-auto min-h-screen flex flex-col relative z-10">
-          <PageTransition>
-            {children}
-          </PageTransition>
+        <main className="pt-14 pb-20 px-6 md:px-12 max-w-6xl mx-auto min-h-screen flex flex-col relative z-10">
+          {children}
         </main>
         <Footer />
       </body>
