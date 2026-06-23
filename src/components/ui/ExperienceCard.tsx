@@ -64,36 +64,31 @@ export default function ExperienceCard({ experience, index }: ExperienceProps) {
   return (
     <div className={`relative flex items-center justify-between md:justify-normal w-full mb-16 ${isEven ? 'md:flex-row-reverse' : ''}`}>
       
-      {/* Center timeline dot */}
-      <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-terracotta border-4 border-cream z-20 shadow-md" />
-      
-      {/* Pulse ring on the dot */}
-      <motion.div
-        className="hidden md:block absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full border-2 border-terracotta/40 z-10"
-        animate={{ scale: [1, 1.8, 1], opacity: [0.5, 0, 0.5] }}
-        transition={{ duration: 3, repeat: Infinity, delay: index * 0.5 }}
-      />
-      
       {/* Empty space */}
       <div className="hidden md:block w-5/12" />
 
       {/* Card */}
       <motion.div
-        ref={cardRef}
-        className="w-full md:w-5/12 z-10 card-3d"
-        style={{ perspective: 1200, rotateX, rotateY }}
-        onMouseMove={handleMouse}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={handleMouseEnter}
-        initial={{ opacity: 0, x: isEven ? 50 : -50 }}
-        whileInView={{ opacity: 1, x: 0 }}
+        className="w-full md:w-5/12 z-10"
+        initial={{ opacity: 0, y: 60, rotateX: -45, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+        transition={{ duration: 0.8, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+        style={{ perspective: 1200 }}
       >
+        <motion.div
+          ref={cardRef}
+          className="w-full h-full card-3d"
+          style={{ rotateX, rotateY }}
+          onMouseMove={handleMouse}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter}
+        >
         <motion.div 
-          className="glass p-6 rounded-xl shadow-sm relative group hover:shadow-lg transition-all duration-300 glow-border cursor-pointer card-3d-inner overflow-hidden"
-          animate={{ scale: isHovered ? 1.02 : 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="bg-cream/80 backdrop-blur-md p-6 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-sage/20 relative group hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 cursor-pointer card-3d-inner overflow-hidden"
+          animate={{ scale: isHovered ? 1.03 : 1, y: isHovered ? -8 : 0 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          whileTap={{ scale: 0.98 }}
           style={{ transformStyle: "preserve-3d" }}
         >
           {/* Glare overlay */}
@@ -102,27 +97,42 @@ export default function ExperienceCard({ experience, index }: ExperienceProps) {
             style={{ background: glareBackground, opacity: isHovered ? 1 : 0 }}
           />
           
-          {/* Connector arrow */}
-          <div className={`hidden md:block absolute top-6 w-0 h-0 border-y-8 border-y-transparent ${isEven ? 'right-full border-r-[12px] border-r-cream-dark/60' : 'left-full border-l-[12px] border-l-cream-dark/60'}`} />
-          
           <div className="flex flex-col gap-1 mb-4 relative z-10" style={{ transform: "translateZ(20px)" }}>
-            <span className="font-mono text-xs text-terracotta tracking-wider">{experience.date}</span>
+            <motion.span 
+              className="font-mono text-xs text-terracotta tracking-wider"
+              animate={{ x: isHovered ? 5 : 0 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >{experience.date}</motion.span>
             <h3 className="text-xl font-bold text-sage-dark group-hover:text-terracotta transition-colors">{experience.role}</h3>
             <span className="text-sm font-medium text-warm-brown/80">{experience.company}</span>
           </div>
 
           <div className="space-y-3 text-sm text-text-muted leading-relaxed mb-5 relative z-10" style={{ transform: "translateZ(10px)" }}>
-            <p><strong className="text-warm-brown font-medium">The Challenge:</strong> {experience.problem}</p>
-            <p><strong className="text-warm-brown font-medium">My Approach:</strong> {experience.approach}</p>
-            <p><strong className="text-warm-brown font-medium">The Impact:</strong> {experience.impact}</p>
+            <motion.p animate={{ x: isHovered ? 4 : 0 }} transition={{ duration: 0.3, delay: 0.05 }}><strong className="text-warm-brown font-medium">The Challenge:</strong> {experience.problem}</motion.p>
+            <motion.p animate={{ x: isHovered ? 4 : 0 }} transition={{ duration: 0.3, delay: 0.1 }}><strong className="text-warm-brown font-medium">My Approach:</strong> {experience.approach}</motion.p>
+            <motion.p animate={{ x: isHovered ? 4 : 0 }} transition={{ duration: 0.3, delay: 0.15 }}><strong className="text-warm-brown font-medium">The Impact:</strong> {experience.impact}</motion.p>
           </div>
 
-          <div className="flex flex-wrap gap-2 pt-4 border-t border-sage-light/10 relative z-10" style={{ transform: "translateZ(30px)" }}>
-            {experience.metrics.map(metric => (
-              <SkillTag key={metric} label={metric} />
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-sage/10 relative z-10" style={{ transform: "translateZ(30px)" }}>
+            {experience.metrics.map((metric, index) => (
+              <motion.div
+                key={metric}
+                initial={false}
+                animate={{ 
+                  y: isHovered ? [0, -3, 0] : 0 
+                }}
+                transition={{
+                  duration: 0.4,
+                  delay: isHovered ? index * 0.05 : 0,
+                  ease: "easeOut"
+                }}
+              >
+                <SkillTag label={metric} />
+              </motion.div>
             ))}
           </div>
         </motion.div>
+      </motion.div>
       </motion.div>
     </div>
   );

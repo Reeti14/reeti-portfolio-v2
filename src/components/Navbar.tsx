@@ -6,6 +6,7 @@ import MagneticElement from "./ui/MagneticElement";
 
 const navItems = [
   { id: "home", label: "home" },
+  { id: "skills", label: "skills" },
   { id: "experience", label: "experience" },
   { id: "projects", label: "projects" },
   { id: "open-source", label: "open-source" },

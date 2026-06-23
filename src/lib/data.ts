@@ -38,7 +38,7 @@ export const experiences = [
   },
   {
     id: "wikimedia",
-    role: "Open Source Engineer",
+    role: "Open Source Contributor",
     company: "Wikimedia Foundation",
     date: "Feb 2025 — Present",
     problem: "MediaWiki's massive global ecosystem relies on continuous community contributions, but new developers often struggle with complex legacy systems.",
@@ -73,7 +73,7 @@ export const projects = [
     description: "An NLP-based machine learning model utilizing Naive Bayes to classify textual sentiment with high accuracy, designed for social media monitoring.",
     tech: ["Python", "NLP", "Naive Bayes"],
     link: null,
-    github: "#" 
+    github: "https://github.com/Reeti14/Sentiment-Analysis-NaiveBayes" 
   },
   {
     id: "canecare",
@@ -133,19 +133,9 @@ export const openSourceData = {
       desc: "Bridging the gap between students and open-source opportunities, organized Wikipedia's 25th Birthday celebration."
     },
     {
-      title: "Facilitator",
-      org: "TFUG Prayagraj",
-      desc: "Facilitating technical study jams for the local TensorFlow User Group."
-    },
-    {
       title: "Core Team Media",
       org: "TEDxUIT",
       desc: "Managed media and technical initiatives for the campus TEDx event."
-    },
-    {
-      title: "Contributor",
-      org: "Varanasi Documentation",
-      desc: "Curated and uploaded media to open repositories during a photo walk at Ramnagar Fort."
     }
   ]
 };

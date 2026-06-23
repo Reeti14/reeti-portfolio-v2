@@ -71,7 +71,7 @@ export default function CharacterHome() {
 
       <motion.div style={{ rotateX, rotateY, x: parallaxX, y: parallaxY }} className="w-full h-full flex justify-center items-center relative z-10">
         <motion.img
-          src="/images/characters/hero-character.home.png"
+          src="/images/characters/hero-character.experience.png"
           alt="Reeti 3D character home"
           className="w-full h-auto"
           animate={{ 

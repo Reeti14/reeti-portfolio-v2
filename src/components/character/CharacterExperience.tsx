@@ -71,9 +71,9 @@ export default function CharacterExperience() {
 
       <motion.div style={{ rotateX, rotateY, x: parallaxX, y: parallaxY }} className="w-full h-full flex justify-center items-center relative z-10">
         <motion.img
-          src="/images/characters/hero-character.experience.png"
+          src="/images/characters/hero-character.home.png"
           alt="Reeti 3D character experience"
-          className="w-full h-auto"
+          className="w-full h-auto drop-shadow-xl"
           animate={{ 
             y: [0, -18, 0],
             rotateZ: [-1.5, 1.5, -1.5],
